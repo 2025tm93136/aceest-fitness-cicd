@@ -9,7 +9,7 @@ pipeline {
         choice(name: 'DEPLOY_STRATEGY',
                choices: ['rolling', 'blue-green', 'canary', 'ab-testing', 'shadow', 'none'],
                description: 'Kubernetes deployment strategy for this build')
-        string(name: 'DOCKERHUB_USER', defaultValue: 'CHANGE_ME',
+        string(name: 'DOCKERHUB_USER', defaultValue: 'faheemmahamoonbits',
                description: 'Docker Hub namespace for the aceest-fitness image')
     }
 
@@ -86,7 +86,7 @@ pipeline {
         }
 
         stage('Push to Docker Hub') {
-            when { expression { params.DOCKERHUB_USER != 'CHANGE_ME' } }
+            when { expression { params.DOCKERHUB_USER ?.trim() } }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
                                                   usernameVariable: 'DH_USER', passwordVariable: 'DH_TOKEN')]) {
