@@ -1,7 +1,7 @@
 """v2.0.1 - Weekly adherence tracking persisted in SQLite."""
 from flask import Blueprint, jsonify, request
 
-from .db import find_client, get_db
+from .db import find_client, get_db, is_int
 
 bp = Blueprint("progress", __name__)
 
@@ -13,7 +13,7 @@ def add_progress(name):
     data = request.get_json(silent=True) or {}
     week = data.get("week")
     adherence = data.get("adherence")
-    if not week or not isinstance(adherence, int) or not 0 <= adherence <= 100:
+    if not week or not is_int(adherence) or not 0 <= adherence <= 100:
         return jsonify(error="week is required and adherence must be an integer 0-100"), 400
     db = get_db()
     db.execute(

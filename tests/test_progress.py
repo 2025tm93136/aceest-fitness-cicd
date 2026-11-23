@@ -15,6 +15,7 @@ def test_progress_empty_average_is_none(client, member):
 
 @pytest.mark.parametrize("payload", [
     {"week": "W1", "adherence": 150},
+    {"week": "W1", "adherence": True},
     {"adherence": 50},
 ])
 def test_progress_validation(client, member, payload):
