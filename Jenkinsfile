@@ -86,7 +86,7 @@ pipeline {
         }
 
         stage('Push to Docker Hub') {
-            when { expression { params.DOCKERHUB_USER ?.trim() } }
+            when { expression { params.DOCKERHUB_USER?.trim() } }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
                                                   usernameVariable: 'DH_USER', passwordVariable: 'DH_TOKEN')]) {
