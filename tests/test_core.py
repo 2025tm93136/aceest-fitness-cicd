@@ -26,3 +26,8 @@ def test_deployment_track_from_env(monkeypatch, tmp_path):
     app = create_app({"DATABASE": str(tmp_path / "t.db")})
     assert app.test_client().get("/version").get_json()["track"] == "canary"
 
+
+def test_version_headers(app, client):
+    res = client.get("/health")
+    assert res.headers["X-App-Version"] == app.config["APP_VERSION"]
+    assert res.headers["X-Deployment-Track"] == "local"
