@@ -6,3 +6,4 @@ Each release maps to one of the provided ACEest desktop versions (see `legacy/`)
 |---|---|---|
 | 1.0 | Aceestver-1.0.py | Programs API (Fat Loss / Muscle Gain / Beginner workout + diet plans), health & version endpoints |
 | 1.1 | Aceestver-1.1.py | Client profiles with calorie estimation (weight x program factor) |
+| 1.1.2 | Aceestver1.1.2.py | CSV export of clients |
