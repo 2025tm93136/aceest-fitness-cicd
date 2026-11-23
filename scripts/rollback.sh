@@ -12,6 +12,7 @@ case "${1:?strategy}" in
     CUR=$(kubectl -n $NS get svc aceest-bluegreen -o jsonpath='{.spec.selector.track}')
     kubectl -n $NS patch svc aceest-bluegreen -p "{\"spec\":{\"selector\":{\"app\":\"aceest-fitness\",\"track\":\"$PREV\"}}}"
     kubectl -n $NS annotate svc aceest-bluegreen aceest/previous-color="$CUR" --overwrite
+    sleep 5   # let ingress-nginx pick up the new endpoints
     echo "Blue-Green rollback: $CUR -> $PREV" ;;
   canary)
     kubectl -n $NS delete ingress aceest-canary --ignore-not-found

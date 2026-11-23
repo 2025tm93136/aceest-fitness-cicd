@@ -40,6 +40,7 @@ case "$STRATEGY" in
     wait_rollout aceest-$TARGET && smoke aceest-$TARGET
     kubectl -n $NS annotate svc aceest-bluegreen aceest/previous-color="$LIVE" --overwrite
     kubectl -n $NS patch svc aceest-bluegreen -p "{\"spec\":{\"selector\":{\"app\":\"aceest-fitness\",\"track\":\"$TARGET\"}}}"
+    sleep 5   # let ingress-nginx pick up the new endpoints
     echo "Blue-Green: traffic switched $LIVE -> $TARGET (${NEW_TAG})"
     ;;
   canary)
