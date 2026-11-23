@@ -76,6 +76,12 @@ def create_app(config=None):
             features=features,
         )
 
+    @app.after_request
+    def add_version_headers(response):
+        response.headers["X-App-Version"] = app.config["APP_VERSION"]
+        response.headers["X-Deployment-Track"] = app.config["DEPLOYMENT"]
+        return response
+
     @app.errorhandler(404)
     def not_found(_err):
         return jsonify(error="Not found"), 404
