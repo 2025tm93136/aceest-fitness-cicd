@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ACEest Fitness &amp; Gym</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #1a1a1a; color: #eee; margin: 0; }
+    header { background: #d4af37; color: #111; padding: 20px 40px; }
+    main { padding: 30px 40px; }
+    .badge { display: inline-block; padding: 6px 14px; border-radius: 14px; background: #333; margin-right: 8px; }
+    .track-blue { background: #1e6fd9; } .track-green { background: #1f9d55; }
+    .track-canary { background: #d97706; } .track-stable { background: #555; }
+    li { margin: 4px 0; }
+  </style>
+</head>
+<body>
+  <header><h1>ACEest Functional Fitness</h1></header>
+  <main>
+    <p>
+      <span class="badge">Version {{ version }}</span>
+      <span class="badge track-{{ track }}">Track: {{ track }}</span>
+    </p>
+    <h3>Available features</h3>
+    <ul>{% for f in features %}<li>{{ f }}</li>{% endfor %}</ul>
+    <p>API: <code>/programs</code>, <code>/clients</code>, <code>/health</code>, <code>/version</code></p>
+  </main>
+</body>
+</html>
