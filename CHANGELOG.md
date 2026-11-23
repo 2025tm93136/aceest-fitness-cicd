@@ -10,3 +10,4 @@ Each release maps to one of the provided ACEest desktop versions (see `legacy/`)
 | 2.0.1 | Aceestver2.0.1.py | SQLite persistence and weekly adherence tracking |
 | 2.1.2 | Aceestver-2.1.2.py | Bug fix: JSON booleans no longer accepted as adherence values |
 | 2.2.1 | Aceestver-2.2.1.py | Progress chart data endpoint (replaces matplotlib chart) |
+| 2.2.4 | Aceestver-2.2.4.py | Workout log, body metrics, BMI with category |
