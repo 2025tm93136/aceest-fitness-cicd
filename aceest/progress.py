@@ -1,4 +1,4 @@
-"""v2.0.1 - Weekly adherence tracking persisted in SQLite."""
+"""v2.0.1 - Weekly adherence tracking persisted in SQLite (v2.2.1 adds chart data)."""
 from flask import Blueprint, jsonify, request
 
 from .db import find_client, get_db, is_int
@@ -39,3 +39,15 @@ def get_progress(name):
     average = round(sum(e["adherence"] for e in entries) / len(entries), 1) if entries else None
     return jsonify(entries=entries, average_adherence=average)
 
+
+@bp.get("/clients/<name>/progress/chart")
+def progress_chart(name):
+    """Chart-ready series (labels + values), replacing the desktop matplotlib chart."""
+    if not find_client(name):
+        return jsonify(error="Client not found"), 404
+    entries = _entries(name)
+    return jsonify(
+        title="Weekly Adherence (%)",
+        labels=[e["week"] for e in entries],
+        values=[e["adherence"] for e in entries],
+    )

@@ -25,3 +25,9 @@ def test_progress_validation(client, member, payload):
 def test_progress_unknown_client(client):
     assert client.post("/clients/Nobody/progress", json={}).status_code == 404
 
+
+def test_progress_chart_series(client, member):
+    client.post(f"/clients/{member}/progress", json={"week": "W1", "adherence": 70})
+    body = client.get(f"/clients/{member}/progress/chart").get_json()
+    assert body["labels"] == ["W1"]
+    assert body["values"] == [70]
