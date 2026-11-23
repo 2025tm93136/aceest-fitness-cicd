@@ -116,12 +116,12 @@ pipeline {
         stage('Deploy to Kubernetes') {
             when { expression { params.DEPLOY_STRATEGY != 'none' } }
             steps {
-                sh 'scripts/deploy.sh ${DEPLOY_STRATEGY} ${IMAGE} ${APP_VERSION}'
+                sh "scripts/deploy.sh ${params.DEPLOY_STRATEGY} ${env.IMAGE} ${env.APP_VERSION}"
             }
             post {
                 failure {
                     echo 'Deployment failed - rolling back to the last stable version'
-                    sh 'scripts/rollback.sh ${DEPLOY_STRATEGY} || true'
+                    sh "scripts/rollback.sh ${params.DEPLOY_STRATEGY} || true"
                 }
             }
         }
