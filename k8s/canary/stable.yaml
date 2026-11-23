@@ -1,0 +1,64 @@
+# Canary: stable gets all traffic, canary ingress shifts __CANARY_WEIGHT__% to the new version.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aceest-stable
+  namespace: aceest
+  labels: {app: aceest-fitness, track: stable}
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels: {app: aceest-fitness, deployment: aceest-stable}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  template:
+    metadata:
+      labels: {app: aceest-fitness, deployment: aceest-stable, track: stable}
+    spec:
+      containers:
+        - name: aceest
+          image: __IMAGE__:__STABLE_TAG__
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 5000}]
+          env:
+            - {name: DEPLOYMENT_TRACK, value: "stable"}
+          readinessProbe:
+            httpGet: {path: /health, port: 5000}
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health, port: 5000}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 256Mi}
+          volumeMounts: [{name: data, mountPath: /data}]
+      volumes: [{name: data, emptyDir: {}}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aceest-stable
+  namespace: aceest
+spec:
+  selector: {app: aceest-fitness, track: stable}
+  ports: [{port: 80, targetPort: 5000}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aceest-canary-main
+  namespace: aceest
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: canary.aceest.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: aceest-stable, port: {number: 80}}
