@@ -1,0 +1,64 @@
+# A/B Testing: variant A by default; requests with header X-Variant: B (or cookie ab_variant=always) get variant B.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aceest-variant-a
+  namespace: aceest
+  labels: {app: aceest-fitness, track: variant-a}
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels: {app: aceest-fitness, deployment: aceest-variant-a}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  template:
+    metadata:
+      labels: {app: aceest-fitness, deployment: aceest-variant-a, track: variant-a}
+    spec:
+      containers:
+        - name: aceest
+          image: __IMAGE__:__STABLE_TAG__
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 5000}]
+          env:
+            - {name: DEPLOYMENT_TRACK, value: "variant-a"}
+          readinessProbe:
+            httpGet: {path: /health, port: 5000}
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health, port: 5000}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 256Mi}
+          volumeMounts: [{name: data, mountPath: /data}]
+      volumes: [{name: data, emptyDir: {}}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aceest-variant-a
+  namespace: aceest
+spec:
+  selector: {app: aceest-fitness, track: variant-a}
+  ports: [{port: 80, targetPort: 5000}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aceest-ab-main
+  namespace: aceest
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ab.aceest.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: aceest-variant-a, port: {number: 80}}
